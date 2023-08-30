@@ -20,6 +20,7 @@ class SocialiteLoginController extends Controller
     public function __construct(
         protected FilamentSocialite $socialite,
     ) {
+        // ...
     }
 
     public function redirectToProvider(string $provider)
@@ -138,6 +139,7 @@ class SocialiteLoginController extends Controller
 
         // Try to retrieve existing user
         $oauthUser = $this->retrieveOauthUser($provider);
+
         if (is_null($oauthUser)) {
             return $this->redirectToLogin('auth.login-failed');
         }
@@ -151,16 +153,17 @@ class SocialiteLoginController extends Controller
 
         // Try to find a socialite user
         $socialiteUser = $this->retrieveSocialiteUser($provider, $oauthUser);
+
         if ($socialiteUser) {
             return $this->loginUser($socialiteUser);
         }
 
-        // See if registration is allowed
-        if (! $this->socialite->isRegistrationEnabled()) {
-            Events\RegistrationNotEnabled::dispatch($provider, $oauthUser);
-
-            return $this->redirectToLogin('auth.registration-not-enabled');
-        }
+//        // See if registration is allowed
+//         if (! $this->socialite->isRegistrationEnabled()) {
+//             Events\RegistrationNotEnabled::dispatch($provider, $oauthUser);
+//
+//             return $this->redirectToLogin('auth.registration-not-enabled');
+//         }
 
         // See if a user already exists, but not for this socialite provider
         $user = app()->call($this->socialite->getUserResolver(), ['provider' => $provider, 'oauthUser' => $oauthUser, 'socialite' => $this->socialite]);
